@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Header } from '@/components/layout/Header'
 import { ChatList } from '@/components/chat/ChatList'
@@ -15,7 +15,7 @@ import { chatService } from '@/services/chatService'
 
 const supabase = createClient()
 
-export default function ChatPage() {
+function ChatContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [currentUser, setCurrentUser] = useState<User | null>(null)
@@ -47,14 +47,12 @@ export default function ChatPage() {
     }
   }, [currentUser, fetchChats])
 
-  // Update conversationId if URL changes
   useEffect(() => {
     const convId = searchParams.get('convId')
     setActiveConversationId(convId)
     setShowMobileChat(!!convId)
   }, [searchParams])
 
-  // Presence / Online Status Tracking
   useEffect(() => {
     if (!currentUser) return;
 
@@ -163,12 +161,9 @@ export default function ChatPage() {
 
   async function handleNewChat(user: User) {
     if (!currentUser) return
-
     setOtherUserName(user.full_name || user.email)
-
     try {
       const targetConversationId = await chatService.createConversation(currentUser.id, user.id)
-
       if (targetConversationId) {
         await fetchChats()
         setActiveConversationId(targetConversationId)
@@ -196,7 +191,6 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-screen">
       <Header userName={currentUser?.full_name || currentUser?.email} />
-
       <div className="flex-1 flex overflow-hidden">
         <div className={`w-full lg:w-80 xl:w-96 ${showMobileChat ? 'hidden lg:block' : 'block'}`}>
           <ChatList
@@ -207,7 +201,6 @@ export default function ChatPage() {
             onlineUsers={onlineUsers}
           />
         </div>
-
         <div className={`flex-1 ${showMobileChat ? 'block' : 'hidden lg:block'}`}>
           {showMobileChat && activeConversationId && (
             <div className="lg:hidden p-2 border-b border-border">
@@ -231,7 +224,6 @@ export default function ChatPage() {
           />
         </div>
       </div>
-
       <NewChatDialog
         open={showNewChatDialog}
         onOpenChange={setShowNewChatDialog}
@@ -239,5 +231,13 @@ export default function ChatPage() {
         onSelectUser={handleNewChat}
       />
     </div>
+  )
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen">Memuat...</div>}>
+      <ChatContent />
+    </Suspense>
   )
 }
