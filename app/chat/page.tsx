@@ -189,10 +189,12 @@ function ChatContent() {
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="h-[100dvh] flex flex-col overflow-hidden bg-background">
       <Header userName={currentUser?.full_name || currentUser?.email} />
-      <div className="flex-1 flex overflow-hidden">
-        <div className={`w-full lg:w-80 xl:w-96 ${showMobileChat ? 'hidden lg:block' : 'block'}`}>
+      <div className="flex-1 flex overflow-hidden relative">
+        <aside className={`w-full md:w-80 lg:w-96 flex-shrink-0 flex flex-col border-r bg-background ${
+          activeConversationId ? 'hidden md:flex' : 'flex'
+        }`}>
           <ChatList
             chats={chats}
             activeConversationId={activeConversationId}
@@ -200,29 +202,24 @@ function ChatContent() {
             onNewChat={() => setShowNewChatDialog(true)}
             onlineUsers={onlineUsers}
           />
-        </div>
-        <div className={`flex-1 ${showMobileChat ? 'block' : 'hidden lg:block'}`}>
-          {showMobileChat && activeConversationId && (
-            <div className="lg:hidden p-2 border-b border-border">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowMobileChat(false)}
-                className="gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Kembali
-              </Button>
-            </div>
-          )}
+        </aside>
+        <main className={`w-full flex-1 h-full flex flex-col overflow-hidden bg-background ${
+          !activeConversationId ? 'hidden md:flex' : 'flex'
+        }`}>
           <ConversationPanel
             conversationId={activeConversationId}
             messages={messages}
             currentUserId={currentUser?.id || ''}
             otherUserName={otherUserName}
+            otherUserId={chats.find(c => c.conversation_id === activeConversationId)?.other_user.id || ''}
+            onlineUsers={onlineUsers}
             onSendMessage={handleSendMessage}
+            onBack={() => {
+              setActiveConversationId(null)
+              router.push('/chat')
+            }}
           />
-        </div>
+        </main>
       </div>
       <NewChatDialog
         open={showNewChatDialog}

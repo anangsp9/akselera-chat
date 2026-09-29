@@ -5,11 +5,13 @@ const supabase = createClient();
 
 export const chatService = {
   async fetchChats(userId: string): Promise<ChatListItem[]> {
+    // Fetch conversations where user is a participant and NOT hidden
     const { data: conversations } = await supabase
       .from('conversation_participants')
       .select(
         `
         conversation_id,
+        is_hidden,
         conversations!inner (
           id,
           updated_at
@@ -17,6 +19,7 @@ export const chatService = {
       `
       )
       .eq('user_id', userId)
+      .eq('is_hidden', false) // Only show non-hidden conversations
       .order('conversations(updated_at)', { ascending: false });
 
     if (!conversations) return [];

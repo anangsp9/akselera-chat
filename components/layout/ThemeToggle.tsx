@@ -3,14 +3,7 @@
 import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
@@ -21,20 +14,26 @@ export function ThemeToggle() {
   }, [])
 
   if (!mounted) {
-    return null
+    return (
+      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl border border-border bg-background">
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    )
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}>
-        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-        <span className="sr-only">Toggle theme</span>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>Light</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>Dark</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      className="h-10 w-10 rounded-xl border border-border bg-background hover:bg-accent transition-all duration-300"
+      aria-label={`Ganti ke mode ${theme === 'dark' ? 'terang' : 'gelap'}`}
+    >
+      {theme === 'dark' ? (
+        <Sun className="h-5 w-5 rotate-0 scale-100 transition-transform duration-300 hover:rotate-12" />
+      ) : (
+        <Moon className="h-5 w-5 rotate-0 scale-100 transition-transform duration-300 hover:rotate-12" />
+      )}
+    </Button>
   )
 }

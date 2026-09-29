@@ -12,6 +12,9 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: "Akselera Chat",
   description: "Internal Chat Application for Akselera Tech",
+  icons: {
+    icon: "/iconakselera.png",
+  },
 };
 
 export default function RootLayout({
