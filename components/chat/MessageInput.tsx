@@ -2,8 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Send, Paperclip, Smile } from 'lucide-react'
+import { Send } from 'lucide-react'
 
 interface MessageInputProps {
   onSendMessage: (message: string) => Promise<void>
@@ -35,34 +34,35 @@ export function MessageInput({ onSendMessage, disabled = false }: MessageInputPr
     }
   }
 
+  const hasMessage = message.trim().length > 0
+
   return (
-    <div className="flex items-center gap-2 p-3 border-t border-border bg-background/50 backdrop-blur">
-      <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-foreground" disabled={disabled}>
-        <Paperclip className="h-5 w-5" />
-      </Button>
-      <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-foreground" disabled={disabled}>
-        <Smile className="h-5 w-5" />
-      </Button>
-      <div className="flex-1 relative">
-        <Textarea
+    <div className="p-3 md:p-4 bg-background/80 backdrop-blur-md border-t border-border/50">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-900/60 p-1.5 pl-4 flex items-center gap-2 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all duration-200">
+        <textarea
           ref={textareaRef}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ketik pesan..."
           disabled={loading || disabled}
-          className="h-10 pr-12 rounded-xl bg-muted/50 border-border/50 focus:border-primary focus:ring-primary/20 resize-none max-h-24 transition-all"
+          className="bg-transparent border-0 focus:outline-none focus:ring-0 focus-visible:ring-0 text-sm text-foreground placeholder:text-muted-foreground resize-none w-full py-1.5 min-h-[44px] max-h-[120px]"
           rows={1}
+          aria-label="Ketik pesan"
         />
+        <Button
+          onClick={handleSend}
+          disabled={loading || disabled || !message.trim()}
+          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0 ${
+            message.trim()
+              ? 'bg-primary text-primary-foreground hover:opacity-90 hover:scale-105 active:scale-95 shadow-sm cursor-pointer'
+              : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-60'
+          }`}
+          aria-label="Kirim pesan"
+        >
+          <Send className="h-5 w-5 rotate-45" />
+        </Button>
       </div>
-      <Button
-        onClick={handleSend}
-        disabled={loading || disabled || !message.trim()}
-        className="h-10 w-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary shadow-sm"
-        aria-label="Kirim pesan"
-      >
-        <Send className="h-5 w-5" />
-      </Button>
     </div>
   )
 }

@@ -16,15 +16,15 @@ export function MessageBubble({ message, isSender }: MessageBubbleProps) {
   })
 
   return (
-    <div className={`flex ${isSender ? 'justify-end' : 'justify-start'} mb-3`}>
+    <div className={`flex ${isSender ? 'justify-end' : 'justify-start'} mb-3 min-w-0`}>
       <div
-        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+        className={`max-w-[80%] sm:max-w-[70%] px-4 py-2 rounded-lg ${
           isSender
             ? 'bg-primary text-primary-foreground rounded-br-none'
             : 'bg-muted text-foreground rounded-bl-none'
         }`}
       >
-        <p className="text-sm break-words">{message.content}</p>
+        <p className="text-sm break-words overflow-wrap-anywhere break-all whitespace-pre-wrap">{message.content}</p>
         <p className={`text-xs mt-1 ${isSender ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
           {timeAgo}
         </p>
